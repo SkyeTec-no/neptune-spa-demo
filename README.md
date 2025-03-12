@@ -20,6 +20,66 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Neptune Integration
+
+This project is designed to work with Neptune as a backend solution. Below are some important configurations needed to ensure seamless integration.
+
+### API Proxy Configuration (CORS Handling)
+
+When developing locally, CORS can be an obstacle due to the API being hosted on a different domain than the website. To bypass this, the development server is used as a proxy for all API requests. This can be set up in `next.config.ts` as follows:
+
+```ts
+const nextConfig = (phase: string): NextConfig => {
+  return {
+    ...
+    rewrites:
+      phase === PHASE_DEVELOPMENT_SERVER
+        ? async () => {
+            return [
+              {
+                source: "/api/:path*",
+                destination: `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/:path*`,
+              },
+            ];
+          }
+        : undefined,
+    ...
+  };
+};
+```
+
+### Base Path Configuration
+
+Neptune websites are usually deployed on a URL with a base path, for example: 
+`https://pheno-dev.neptune-software.cloud/webapp/app-name`. 
+To ensure proper routing in production, modify the `basePath` property in `next.config.ts`:
+
+```ts
+const nextConfig = (phase: string): NextConfig => {
+  return {
+    ...
+    basePath: phase === PHASE_PRODUCTION_BUILD ? "/webapp/app-name" : undefined,
+    ...
+  };
+};
+```
+
+### Authentication Setup
+
+Neptune uses Basic Auth for authentication. If your Neptune website is protected behind a login, ensure that a username and password are sent with every request when querying the API during local development. In production, this should be automatically included by the browser if the user is already logged in. Example:
+
+```ts
+const username = process.env.NEXT_PUBLIC_NEPTUNE_USERNAME;
+const password = process.env.NEXT_PUBLIC_NEPTUNE_PASSWORD;
+const headers = new Headers();
+if (username && password) {
+  headers.set("Authorization", "Basic " + btoa(username + ":" + password));
+}
+const result = await fetch(url, { headers });
+```
+
+Store these credentials in `.env.local`, ensuring they are not included in `.env`, which would expose them in production.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
