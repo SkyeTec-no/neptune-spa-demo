@@ -48,10 +48,16 @@ const nextConfig = (phase: string): NextConfig => {
 };
 ```
 
+This configuration uses the `NEXT_PUBLIC_API_BASE_URL` environment variable to determine the API base URL. This variable should be set in `.env`, for example:
+
+```
+NEXT_PUBLIC_API_BASE_URL="https://pheno-dev.neptune-software.cloud"
+```
+
 ### Base Path Configuration
 
-Neptune websites are usually deployed on a URL with a base path, for example: 
-`https://pheno-dev.neptune-software.cloud/webapp/app-name`. 
+Neptune websites are usually deployed on a URL with a base path, for example:
+`https://pheno-dev.neptune-software.cloud/webapp/app-name`.
 To ensure proper routing in production, modify the `basePath` property in `next.config.ts`:
 
 ```ts
@@ -98,5 +104,3 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 - Upload folder
 - When list of files appears select index.html as startup file and then click upload
 - All set! Click the run button to see your page :)
-
-
